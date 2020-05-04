@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{context_dict.title}}{% endblock %}
+{% block content %}
+    
+    <h1>{{context_dict.title}}</h1>
+    <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="{{context_dict.button}}">
+
+{% endblock %}
+
