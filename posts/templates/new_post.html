@@ -1,12 +1,26 @@
 {% extends "base.html" %}
-{% block title %}{{context_dict.title}}{% endblock %}
-{% block content %}
-    
-    <h1>{{context_dict.title}}</h1>
-    <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="{{context_dict.button}}">
-
+{% block title %}
+    {% if post %}
+        Редактировать запись
+    {% else %}
+        Добавить запись
+    {% endif %}
 {% endblock %}
+
+{% block content %}
+    {% if post %}
+        <h1>Редактировать запись</h1>
+        <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Сохранить">
+    {% else %}
+        <h1>Добавить запись</h1>
+        <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Добавить">
+    {% endif %}
+{% endblock %}
+
 

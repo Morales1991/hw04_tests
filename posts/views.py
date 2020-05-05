@@ -21,7 +21,7 @@ def group_posts(request,slug):
     paginator = Paginator(group_posts_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, 'group.html', {'page': page, 'paginator': paginator})
+    return render(request, 'group.html', {'page':page, 'paginator':paginator, 'group':group})
 
 
 @login_required
@@ -44,30 +44,30 @@ def profile(request, username):
     paginator = Paginator(profile_posts_list, 5)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, 'profile.html', {'page': page, 'paginator': paginator, 'username': username, 'counter': counter_posts, 'user_profile': user_profile})
+    return render(request, 'profile.html', {'page':page, 'paginator':paginator, 'username':username, 'counter':counter_posts, 'user_profile':user_profile})
 
 
 def post_view(request, username, post_id):
     user_profile = Post.objects.get(pk=post_id).author #Сначало мы  достали объект автора, а потом по этому же объекту мы ищем этот же пост, нету ли тут нелогичности?
     post = Post.objects.prefetch_related('author').filter(author=user_profile).get(pk=post_id)
     counter_posts = Post.objects.filter(author=user_profile).count()
-    return render(request, 'post.html', {'username': username, 'user_profile': user_profile, 'post': post, 'counter': counter_posts})
+    return render(request, 'post.html', {'username':username, 'user_profile':user_profile, 'post':post, 'counter':counter_posts})
 
 
 @login_required
 def post_edit(request, username, post_id):
-    post_author = Post.objects.get(pk=post_id).author
-    if post_author == request.user:
+    post = Post.objects.get(pk=post_id)
+    if post.author == request.user:
         context_dict = {'title': 'Редактировать запись', 'button':'Сохранить'}
         if request.method == 'POST':
-            post = Post.objects.get(pk=post_id)#как подргузить в форму редактирования текущие значения?
             form = PostForm(request.POST)
             if form.is_valid():
                 post.text = form.cleaned_data['text']
                 post.Group = form.cleaned_data['group']
                 post.save()
                 return redirect(post_view, username=username, post_id=post_id)
-            return render(request, 'new_post.html', {'form': form, 'context_dict':context_dict})
-        form = PostForm()
-        return render(request, 'new_post.html', {'form': form, 'context_dict': context_dict})
+            return render(request, 'new_post.html', {'form': form, 'post': post})
+        form = PostForm(instance=post)
+        return render(request, 'new_post.html', {'form': form, 'post': post})
     return redirect (post_view, username=username, post_id=post_id)
+
