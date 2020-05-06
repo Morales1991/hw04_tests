@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.contrib.flatpages import views
+from django.conf.urls import handler404, handler500
+
 
 urlpatterns = [
     path('auth/', include('users.urls')),
@@ -31,3 +33,7 @@ urlpatterns += [
         path('about-spec/', views.flatpage, {'url': '/about-spec/'}, name='about-spec'),
         path('', include('posts.urls')),
 ]
+
+handler404 = 'posts.views.page_not_found'
+hadler500 = 'posts.views.server_error'
+
